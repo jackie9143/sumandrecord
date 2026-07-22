@@ -212,7 +212,10 @@
     function saveConfig() {
         const key = document.getElementById('apiKey').value.trim();
         const secret = document.getElementById('notionSecret').value.trim();
-        const dbId = document.getElementById('notionDbId').value.trim();
+        let dbId = document.getElementById('notionDbId').value.trim();
+
+        // 自动容错：移除开头多余的斜杠 /
+        dbId = dbId.replace(/^\//, '').trim();
 
         if (!key || !secret || !dbId) return alert('请填入完整的 DeepSeek Key、Notion Secret 和 Database ID！');
 
@@ -328,68 +331,70 @@
     }
 
     // 🚀 一键无感写入 Notion 数据库
-async function syncToNotion() {
-    const secret = localStorage.getItem('notion_secret_key');
-    const dbId = localStorage.getItem('notion_db_id');
+    async function syncToNotion() {
+        const secret = localStorage.getItem('notion_secret_key');
+        let dbId = localStorage.getItem('notion_db_id') || '';
+        
+        // 自动容错：如果保存的 ID 含有开头斜杠，这里也自动去斜杠
+        dbId = dbId.replace(/^\//, '').trim();
 
-    if (!secret || !dbId) {
-        toggleConfigBackdoor();
-        return alert('请先点大闪电 ⚡ 填入 Notion Secret 和 Database ID！');
-    }
-
-    const title = document.getElementById('outTitle').value.trim();
-    const category = document.getElementById('outCategory').value;
-    const summary = document.getElementById('outSummary').value.trim();
-    const rawText = document.getElementById('rawText').value.trim();
-
-    if (!title || !summary) return alert('标题和摘要不能为空！');
-
-    saveToHistory(title, category, summary);
-
-    const syncBtn = document.getElementById('syncBtn');
-    syncBtn.innerText = "⏳ 正在写入 Notion...";
-    syncBtn.disabled = true;
-
-    // 替换为你刚才在 Cloudflare 部署的 Worker 链接
-    const targetUrl = "https://yellow-thunder-60be.kakei-chiu.workers.dev/";
-
-    const payload = {
-        "parent": { "database_id": dbId },
-        "properties": {
-            "碎片标题": { "title": [{ "text": { "content": title } }] },
-            "分类": { "select": { "name": category } },
-            "碎片内容": { "rich_text": [{ "text": { "content": summary } }] },
-            "备注": { "rich_text": [{ "text": { "content": rawText ? `原始记录：${rawText.slice(0, 200)}` : "速记" } }] },
-            "时间": { "date": { "start": new Date().toISOString() } }
+        if (!secret || !dbId) {
+            toggleConfigBackdoor();
+            return alert('请先点大闪电 ⚡ 填入 Notion Secret 和 Database ID！');
         }
-    };
 
-    try {
-        const response = await fetch(targetUrl, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${secret}`,
-                "Notion-Version": "2025-09-03",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-        });
+        const title = document.getElementById('outTitle').value.trim();
+        const category = document.getElementById('outCategory').value;
+        const summary = document.getElementById('outSummary').value.trim();
+        const rawText = document.getElementById('rawText').value.trim();
 
-        const resData = await response.json();
+        if (!title || !summary) return alert('标题和摘要不能为空！');
 
-        if (response.ok && resData.object === 'page') {
-            alert('🎉 写入成功！数据已实时同步至 Notion！');
-        } else {
-            alert(`Notion 报错：${resData.message || JSON.stringify(resData)}`);
+        saveToHistory(title, category, summary);
+
+        const syncBtn = document.getElementById('syncBtn');
+        syncBtn.innerText = "⏳ 正在写入 Notion...";
+        syncBtn.disabled = true;
+
+        const targetUrl = "https://yellow-thunder-60be.kakei-chiu.workers.dev/";
+
+        const payload = {
+            "parent": { "database_id": dbId },
+            "properties": {
+                "碎片标题": { "title": [{ "text": { "content": title } }] },
+                "分类": { "select": { "name": category } },
+                "碎片内容": { "rich_text": [{ "text": { "content": summary } }] },
+                "备注": { "rich_text": [{ "text": { "content": rawText ? `原始记录：${rawText.slice(0, 200)}` : "速记" } }] },
+                "时间": { "date": { "start": new Date().toISOString() } }
+            }
+        };
+
+        try {
+            const response = await fetch(targetUrl, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${secret}`,
+                    "Notion-Version": "2025-09-03",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const resData = await response.json();
+
+            if (response.ok && resData.object === 'page') {
+                alert('🎉 写入成功！数据已实时同步至 Notion！');
+            } else {
+                alert(`Notion 报错：${resData.message || JSON.stringify(resData)}`);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('请求失败：' + err.message);
+        } finally {
+            syncBtn.innerText = "🚀 确认并写入 Notion";
+            syncBtn.disabled = false;
         }
-    } catch (err) {
-        console.error(err);
-        alert('请求失败：' + err.message);
-    } finally {
-        syncBtn.innerText = "🚀 确认并写入 Notion ";
-        syncBtn.disabled = false;
     }
-}
 
     function saveToHistory(title, category, summary) {
         let history = JSON.parse(localStorage.getItem('feishu_history')) || [];
