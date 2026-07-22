@@ -365,7 +365,7 @@
                 "分类": { "select": { "name": category } },
                 "碎片内容": { "rich_text": [{ "text": { "content": summary } }] },
                 "备注": { "rich_text": [{ "text": { "content": rawText ? `原始记录：${rawText.slice(0, 200)}` : "速记" } }] },
-                "时间": { "date": { "start": new Date().toISOString() } }
+                "日期": { "date": { "start": new Date().toISOString() } }
             }
         };
 
