@@ -10,105 +10,199 @@
             --card-bg: #161b22;
             --border-color: #30363d;
             --accent-glow: #00ffaa;
-            --text-main: #c9d1d9;
+            --accent-blue: #2f81f7;
+            --text-main: #e6edf3;
             --text-muted: #8b949e;
+            --radius: 12px;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            padding: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            padding: 16px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
-        .container { width: 100%; max-width: 720px; }
+        .container { width: 100%; max-width: 760px; flex: 1; }
+        
+        /* 卡片与现代布局 */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
+        
+        /* 标题大字号 */
         h2 { 
             color: var(--accent-glow); 
-            font-size: 18px; 
-            margin-bottom: 12px; 
+            font-size: 22px; 
+            margin-bottom: 16px; 
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
+        h3 { color: var(--accent-glow); font-size: 16px; margin-bottom: 14px; }
+        
         .cyber-logo {
-            font-size: 26px;
+            font-size: 30px;
             cursor: pointer;
             user-select: none;
             transition: transform 0.2s ease, filter 0.2s ease;
             display: inline-block;
         }
         .cyber-logo:hover {
-            transform: scale(1.2);
-            filter: drop-shadow(0 0 8px var(--accent-glow));
+            transform: scale(1.15);
+            filter: drop-shadow(0 0 10px var(--accent-glow));
         }
+
         #configCard {
             display: none;
             border: 1px dashed var(--accent-glow);
-            background: rgba(22, 27, 34, 0.95);
+            background: rgba(22, 27, 34, 0.98);
             animation: fadeIn 0.3s ease-in-out;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-8px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        h3 { color: var(--accent-glow); font-size: 14px; margin-bottom: 10px; }
+
+        /* 增大表单元素与字体 */
+        label { font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px; margin-top: 10px; }
         textarea, input, select {
             width: 100%;
             background: rgba(9, 12, 16, 0.8);
             border: 1px solid var(--border-color);
             color: #fff;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 14px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 15px;
             margin-bottom: 10px;
             outline: none;
+            transition: border-color 0.2s;
         }
         textarea:focus, input:focus, select:focus { border-color: var(--accent-glow); }
-        .btn-group { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+
+        /* 按钮现代化大号设计 */
+        .btn-group { display: flex; gap: 12px; margin-bottom: 12px; }
         button {
-            flex: 1;
-            min-width: 120px;
             background: #238636;
             color: #fff;
             border: none;
-            padding: 10px 14px;
-            border-radius: 6px;
+            padding: 12px 18px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 13px;
-            transition: 0.2s;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
-        button:hover { background: #2ea043; }
+        button:hover { background: #2ea043; transform: translateY(-1px); }
+        button:active { transform: translateY(0); }
         button.secondary { background: #21262d; border: 1px solid var(--border-color); color: var(--text-main); }
-        button.secondary:hover { background: #30363d; }
-        .preview-img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color); }
-        .img-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-        .history-item {
-            background: rgba(9, 12, 16, 0.5);
-            border: 1px solid #21262d;
-            border-radius: 6px;
-            padding: 10px;
-            margin-bottom: 8px;
-            font-size: 12px;
-        }
+        button.secondary:hover { background: #30363d; border-color: #8b949e; }
+        button.action-btn { font-size: 16px; padding: 14px; width: 100%; margin-top: 6px; }
+
+        .preview-img { width: 70px; height: 70px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color); }
+        .img-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+
+        /* 需求 4：微调输入框与重新输出按钮同行并排 */
         .refine-box {
-            background: rgba(0, 0, 0, 0.2);
-            border-top: 1px dashed var(--border-color);
-            padding-top: 10px;
-            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            margin-top: 14px;
+            margin-bottom: 14px;
         }
-        @media (max-width: 480px) {
-            body { padding: 8px; }
-            .card { padding: 12px; }
-            button { width: 100%; min-width: 100%; }
+        .refine-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .refine-row input { margin-bottom: 0; flex: 1; }
+        .refine-row button { white-space: nowrap; padding: 12px 16px; }
+
+        /* 需求 1 & 2：折叠面板与历史记录项操作 */
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .history-header:hover h3 { color: #fff; }
+        .history-list { margin-top: 12px; display: none; } /* 默认折叠 */
+        
+        .history-item {
+            background: rgba(9, 12, 16, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .history-content { flex: 1; min-width: 0; }
+        .history-title { font-size: 14px; font-weight: bold; color: var(--accent-glow); margin-bottom: 4px; }
+        .history-desc { font-size: 13px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .history-actions { display: flex; gap: 6px; flex-shrink: 0; }
+        .history-actions button { padding: 6px 10px; font-size: 12px; font-weight: normal; }
+
+        /* 需求 6：署名页脚 */
+        footer {
+            margin-top: 20px;
+            padding: 16px 0;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(48, 54, 61, 0.5);
+            width: 100%;
+            max-width: 760px;
+        }
+
+        /* 需求 3 & 5：移动端专属适配 */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .card { padding: 14px; }
+            
+            /* 录音与上传图片在移动端高按钮并排 */
+            .btn-group {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .btn-group button {
+                padding: 16px 10px; /* 增加高度更易按 */
+                font-size: 15px;
+            }
+            
+            .refine-row {
+                flex-direction: column;
+            }
+            .refine-row button {
+                width: 100%;
+            }
+
+            .history-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .history-actions {
+                width: 100%;
+                justify-content: flex-end;
+                margin-top: 8px;
+            }
         }
     </style>
 </head>
@@ -116,31 +210,32 @@
 
 <div class="container">
     <h2>
-        <span class="cyber-logo" onclick="toggleConfigBackdoor()" title="芝麻开门">⚡</span> 
-        JACKIE的思维火花记录
-        <span style="font-size: 11px; color: var(--text-muted); font-weight: normal;">// 今天又在想什么呢？</span>
+        <span class="cyber-logo" onclick="toggleConfigBackdoor()" title="点击开启/隐藏密钥后门">⚡</span> 
+        赛博速记终端 
+        <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">// Notion 自动化</span>
     </h2>
 
     <!-- 🚪 暗门配置区域 -->
     <div class="card" id="configCard">
         <h3>🔒 配置面板</h3>
-        <label style="font-size: 11px; color: var(--text-muted);">DEEPSEEK API KEY</label>
+        <label>DEEPSEEK API KEY</label>
         <input type="password" id="apiKey" placeholder="sk-xxx">
         
-        <label style="font-size: 11px; color: var(--text-muted);">NOTION API KEY</label>
+        <label>NOTION API KEY</label>
         <input type="password" id="notionSecret" placeholder="secret_xxxxxxxx...">
         
-        <label style="font-size: 11px; color: var(--text-muted);">NOTION DATABASE ID</label>
+        <label>NOTION DATABASE ID</label>
         <input type="text" id="notionDbId" placeholder="例如：a1b2c3d4e5f67890123456789abcdef0">
 
-        <button onclick="saveConfig()">💾 保存并隐藏</button>
+        <button onclick="saveConfig()" style="width: 100%; margin-top: 10px;">💾 保存配置并隐藏</button>
     </div>
 
     <!-- 1. 多模态采集卡片 -->
     <div class="card">
         <h3>1. 采集内容</h3>
-        <textarea id="rawText" rows="4" placeholder="在此输入文字、点击下方录音，或直接在页面 Cmd+V 粘贴截图..."></textarea>
+        <textarea id="rawText" rows="4" placeholder="在此输入文字、点击下方录音，或直接在页面 Cmd+V / Ctrl+V 粘贴截图..."></textarea>
         
+        <!-- 移动端并排大按钮 -->
         <div class="btn-group">
             <button class="secondary" id="recordBtn" onclick="toggleRecording()">🎙️ 按下录音</button>
             <button class="secondary" onclick="document.getElementById('fileInput').click()">📷 上传图片</button>
@@ -149,17 +244,17 @@
 
         <div id="imgPreviewArea" class="img-container"></div>
 
-        <button onclick="processWithDeepSeek()">🔮 分析总结</button>
+        <button class="action-btn" onclick="processWithDeepSeek()">🔮 AI 智能提炼</button>
     </div>
 
     <!-- 2. AI 提炼与微调确认卡片 -->
     <div class="card" id="confirmCard" style="display: none;">
         <h3>2. 确认与微调</h3>
         
-        <label style="font-size: 11px; color: var(--text-muted);">碎片标题：</label>
+        <label>碎片标题：</label>
         <input type="text" id="outTitle">
         
-        <label style="font-size: 11px; color: var(--text-muted);">分类：</label>
+        <label>分类：</label>
         <select id="outCategory">
             <option value="工作学习">💼 工作学习</option>
             <option value="思维火花">💡 思维火花</option>
@@ -169,24 +264,35 @@
             <option value="其它">📦 其它</option>
         </select>
 
-        <label style="font-size: 11px; color: var(--text-muted);">碎片内容（摘要）：</label>
+        <label>碎片内容（摘要）：</label>
         <textarea id="outSummary" rows="4"></textarea>
 
+        <!-- 需求 4：改要求框与按钮同行 -->
         <div class="refine-box">
-            <label style="font-size: 11px; color: var(--accent-glow);">💬 修改要求 </label>
-            <input type="text" id="refinePrompt" placeholder="例如：字数太长了压缩下 / 改成工具技巧分类 / 重点突出时间">
-            <button class="secondary" onclick="processWithDeepSeek(true)" style="margin-bottom: 12px;">🔄 重新输出</button>
+            <label style="margin-top: 0; color: var(--accent-glow);">💬 修改要求</label>
+            <div class="refine-row">
+                <input type="text" id="refinePrompt" placeholder="例如：缩短字数 / 重点突出时间">
+                <button class="secondary" onclick="processWithDeepSeek(true)">🔄 重新输出</button>
+            </div>
         </div>
 
-        <button id="syncBtn" onclick="syncToNotion()" style="background: #0052d9; font-size: 15px;">🚀 确认并写入 Notion</button>
+        <button id="syncBtn" class="action-btn" onclick="syncToNotion()" style="background: var(--accent-blue);">🚀 确认并写入 Notion</button>
     </div>
 
-    <!-- 3. 最近 10 条历史缓存 -->
+    <!-- 3. 最近 10 条历史缓存（需求 1 & 2：默认折叠 + 操作按钮） -->
     <div class="card" id="historyCard" style="display: none;">
-        <h3>🕒 最近 10 条火花记录</h3>
-        <div id="historyList"></div>
+        <div class="history-header" onclick="toggleHistory()">
+            <h3 style="margin-bottom: 0;">🕒 最近 10 条火花记录</h3>
+            <span id="historyFoldIcon" style="color: var(--text-muted); font-size: 14px;">▶ 点击展开</span>
+        </div>
+        <div id="historyList" class="history-list"></div>
     </div>
 </div>
+
+<!-- 需求 6：署名页脚 -->
+<footer>
+    Designed & Developed with ⚡ by <strong>Jackie</strong>
+</footer>
 
 <script>
     let isRecording = false;
@@ -214,10 +320,9 @@
         const secret = document.getElementById('notionSecret').value.trim();
         let dbId = document.getElementById('notionDbId').value.trim();
 
-        // 自动容错：移除开头多余的斜杠 /
         dbId = dbId.replace(/^\//, '').trim();
 
-        if (!key || !secret || !dbId) return alert('请填入完整的 DeepSeek Key、Notion Secret 和 Database ID！');
+        if (!key || !secret || !dbId) return alert('请填入完整的 Key、Secret 和 Database ID！');
 
         localStorage.setItem('bt_api_key', key);
         localStorage.setItem('notion_secret_key', secret);
@@ -227,7 +332,7 @@
         alert('配置保存成功');
     }
 
-    // 🎤 语音功能
+    // 🎤 语音识别
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         recognition = new SpeechRecognition();
@@ -245,20 +350,20 @@
     }
 
     function toggleRecording() {
-        if (!recognition) return alert('当前浏览器不支持原生语音识别，请使用 Chrome 或 Safari');
+        if (!recognition) return alert('当前浏览器不支持语音识别，请使用 Chrome 或 Safari');
         const btn = document.getElementById('recordBtn');
         if (!isRecording) {
             isRecording = true;
             recognition.start();
-            if (btn) { btn.innerText = '🛑 正在录音...（点击停止）'; btn.style.color = '#ff4d4f'; }
+            if (btn) { btn.innerText = '🛑 正在录音...'; btn.style.color = '#ff4d4f'; }
         } else {
             isRecording = false;
             recognition.stop();
-            if (btn) { btn.innerText = '🎙️ 追加录音'; btn.style.color = 'var(--text-main)'; }
+            if (btn) { btn.innerText = '🎙️ 按下录音'; btn.style.color = 'var(--text-main)'; }
         }
     }
 
-    // 📷 图片粘贴
+    // 📷 图片粘贴与上传
     document.addEventListener('paste', (e) => {
         for (let item of e.clipboardData.items) {
             if (item.type.indexOf('image') !== -1) addImagePreview(item.getAsFile());
@@ -281,7 +386,7 @@
         reader.readAsDataURL(file);
     }
 
-    // 🔮 DeepSeek 智能去噪提炼
+    // 🔮 DeepSeek 智能分析
     async function processWithDeepSeek(isRefining = false) {
         const apiKey = localStorage.getItem('bt_api_key');
         if (!apiKey) {
@@ -330,12 +435,10 @@
         }
     }
 
-    // 🚀 一键无感写入 Notion 数据库
-    async function syncToNotion() {
+    // 🚀 写入 Notion
+    async function syncToNotion(customData = null) {
         const secret = localStorage.getItem('notion_secret_key');
         let dbId = localStorage.getItem('notion_db_id') || '';
-        
-        // 自动容错：如果保存的 ID 含有开头斜杠，这里也自动去斜杠
         dbId = dbId.replace(/^\//, '').trim();
 
         if (!secret || !dbId) {
@@ -343,14 +446,15 @@
             return alert('请先点大闪电 ⚡ 填入 Notion Secret 和 Database ID！');
         }
 
-        const title = document.getElementById('outTitle').value.trim();
-        const category = document.getElementById('outCategory').value;
-        const summary = document.getElementById('outSummary').value.trim();
-        const rawText = document.getElementById('rawText').value.trim();
+        // 如果是从历史记录直接传参调用
+        const title = customData ? customData.title : document.getElementById('outTitle').value.trim();
+        const category = customData ? customData.category : document.getElementById('outCategory').value;
+        const summary = customData ? customData.summary : document.getElementById('outSummary').value.trim();
+        const rawText = customData ? customData.rawText : document.getElementById('rawText').value.trim();
 
         if (!title || !summary) return alert('标题和摘要不能为空！');
 
-        saveToHistory(title, category, summary);
+        if (!customData) saveToHistory(title, category, summary, rawText);
 
         const syncBtn = document.getElementById('syncBtn');
         syncBtn.innerText = "⏳ 正在写入 Notion...";
@@ -364,7 +468,8 @@
                 "碎片标题": { "title": [{ "text": { "content": title } }] },
                 "分类": { "select": { "name": category } },
                 "碎片内容": { "rich_text": [{ "text": { "content": summary } }] },
-                "备注": { "rich_text": [{ "text": { "content": rawText ? `原始记录：${rawText.slice(0, 200)}` : "速记" } }] }
+                "备注": { "rich_text": [{ "text": { "content": rawText ? `原始记录：${rawText.slice(0, 200)}` : "速记" } }] },
+                "时间": { "date": { "start": new Date().toISOString() } }
             }
         };
 
@@ -382,7 +487,7 @@
             const resData = await response.json();
 
             if (response.ok && resData.object === 'page') {
-                alert('🎉 写入成功！数据已实时同步至 Notion！');
+                alert('🎉 写入成功！已同步至 Notion！');
             } else {
                 alert(`Notion 报错：${resData.message || JSON.stringify(resData)}`);
             }
@@ -395,14 +500,28 @@
         }
     }
 
-    function saveToHistory(title, category, summary) {
+    // 需求 2：折叠/展开历史记录
+    function toggleHistory() {
+        const list = document.getElementById('historyList');
+        const icon = document.getElementById('historyFoldIcon');
+        if (list.style.display === 'block') {
+            list.style.display = 'none';
+            icon.innerText = '▶ 点击展开';
+        } else {
+            list.style.display = 'block';
+            icon.innerText = '▼ 点击折叠';
+        }
+    }
+
+    function saveToHistory(title, category, summary, rawText) {
         let history = JSON.parse(localStorage.getItem('feishu_history')) || [];
-        history.unshift({ title, category, summary, time: new Date().toLocaleString() });
+        history.unshift({ title, category, summary, rawText, time: new Date().toLocaleString() });
         if (history.length > 10) history = history.slice(0, 10);
         localStorage.setItem('feishu_history', JSON.stringify(history));
         renderHistory();
     }
 
+    // 需求 1：渲染历史记录并包含【修改】和【写入Notion】
     function renderHistory() {
         const history = JSON.parse(localStorage.getItem('feishu_history')) || [];
         const historyCard = document.getElementById('historyCard');
@@ -412,12 +531,36 @@
         if (history.length === 0) return historyCard.style.display = 'none';
 
         historyCard.style.display = 'block';
-        historyList.innerHTML = history.map(item => `
+        historyList.innerHTML = history.map((item, index) => `
             <div class="history-item">
-                <div style="color: var(--accent-glow); font-weight: bold;">[${escapeHtml(item.category)}] ${escapeHtml(item.title)} <span style="font-size:10px; color:var(--text-muted); font-weight:normal;">(${item.time})</span></div>
-                <div style="color: var(--text-main); margin-top: 4px;">${escapeHtml(item.summary)}</div>
+                <div class="history-content">
+                    <div class="history-title">[${escapeHtml(item.category)}] ${escapeHtml(item.title)}</div>
+                    <div class="history-desc">${escapeHtml(item.summary)}</div>
+                </div>
+                <div class="history-actions">
+                    <button class="secondary" onclick="editHistoryItem(${index})">✏️ 修改</button>
+                    <button style="background:#0052d9;" onclick="syncToNotion(getHistoryItem(${index}))">🚀 写入</button>
+                </div>
             </div>
         `).join('');
+    }
+
+    function getHistoryItem(index) {
+        const history = JSON.parse(localStorage.getItem('feishu_history')) || [];
+        return history[index];
+    }
+
+    function editHistoryItem(index) {
+        const item = getHistoryItem(index);
+        if (!item) return;
+        
+        document.getElementById('confirmCard').style.display = 'block';
+        document.getElementById('outTitle').value = item.title;
+        document.getElementById('outCategory').value = item.category;
+        document.getElementById('outSummary').value = item.summary;
+        if (item.rawText) document.getElementById('rawText').value = item.rawText;
+        
+        window.scrollTo({ top: document.getElementById('confirmCard').offsetTop - 20, behavior: 'smooth' });
     }
 
     function escapeHtml(text) {
