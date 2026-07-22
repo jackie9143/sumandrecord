@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>⚡ 赛博速记终端 // Notion 数据库自动同步</title>
+    <title>⚡ JACKIE的思维火花记录 // 今天又在想什么呢?</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -123,38 +123,38 @@
 
     <!-- 🚪 暗门配置区域 -->
     <div class="card" id="configCard">
-        <h3>🔒 后门配置面板（点击大闪电 ⚡ 可随时唤出/隐藏）</h3>
+        <h3>🔒 配置面板</h3>
         <label style="font-size: 11px; color: var(--text-muted);">DEEPSEEK API KEY</label>
         <input type="password" id="apiKey" placeholder="sk-xxx">
         
-        <label style="font-size: 11px; color: var(--text-muted);">NOTION API KEY (Secret Key)</label>
+        <label style="font-size: 11px; color: var(--text-muted);">NOTION API KEY</label>
         <input type="password" id="notionSecret" placeholder="secret_xxxxxxxx...">
         
-        <label style="font-size: 11px; color: var(--text-muted);">NOTION DATABASE ID (32位哈希字符)</label>
+        <label style="font-size: 11px; color: var(--text-muted);">NOTION DATABASE ID</label>
         <input type="text" id="notionDbId" placeholder="例如：a1b2c3d4e5f67890123456789abcdef0">
 
-        <button onclick="saveConfig()">💾 保存配置并隐藏面板</button>
+        <button onclick="saveConfig()">💾 保存并隐藏</button>
     </div>
 
     <!-- 1. 多模态采集卡片 -->
     <div class="card">
-        <h3>1. 采集内容（文本 / 连续语音 / 图片粘贴与拖拽）</h3>
+        <h3>1. 采集内容</h3>
         <textarea id="rawText" rows="4" placeholder="在此输入文字、点击下方录音，或直接在页面 Cmd+V 粘贴截图..."></textarea>
         
         <div class="btn-group">
-            <button class="secondary" id="recordBtn" onclick="toggleRecording()">🎙️ 按下录音（可多次追加）</button>
+            <button class="secondary" id="recordBtn" onclick="toggleRecording()">🎙️ 按下录音</button>
             <button class="secondary" onclick="document.getElementById('fileInput').click()">📷 上传图片</button>
             <input type="file" id="fileInput" multiple accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
         </div>
 
         <div id="imgPreviewArea" class="img-container"></div>
 
-        <button onclick="processWithDeepSeek()">🔮 启动 DeepSeek 智能去噪提炼</button>
+        <button onclick="processWithDeepSeek()">🔮 分析总结</button>
     </div>
 
     <!-- 2. AI 提炼与微调确认卡片 -->
     <div class="card" id="confirmCard" style="display: none;">
-        <h3>2. 确认与微调（修改满意后一键落盘）</h3>
+        <h3>2. 确认与微调</h3>
         
         <label style="font-size: 11px; color: var(--text-muted);">碎片标题：</label>
         <input type="text" id="outTitle">
@@ -173,17 +173,17 @@
         <textarea id="outSummary" rows="4"></textarea>
 
         <div class="refine-box">
-            <label style="font-size: 11px; color: var(--accent-glow);">💬 不满意？提出修改指令让 AI 重写：</label>
+            <label style="font-size: 11px; color: var(--accent-glow);">💬 修改要求 </label>
             <input type="text" id="refinePrompt" placeholder="例如：字数太长了压缩下 / 改成工具技巧分类 / 重点突出时间">
-            <button class="secondary" onclick="processWithDeepSeek(true)" style="margin-bottom: 12px;">🔄 带着要求重新提炼</button>
+            <button class="secondary" onclick="processWithDeepSeek(true)" style="margin-bottom: 12px;">🔄 重新输出</button>
         </div>
 
-        <button id="syncBtn" onclick="syncToNotion()" style="background: #0052d9; font-size: 15px;">🚀 确认无误，写入 Notion 数据库</button>
+        <button id="syncBtn" onclick="syncToNotion()" style="background: #0052d9; font-size: 15px;">🚀 确认并写入 Notion</button>
     </div>
 
     <!-- 3. 最近 10 条历史缓存 -->
     <div class="card" id="historyCard" style="display: none;">
-        <h3>🕒 最近 10 条速记历史</h3>
+        <h3>🕒 最近 10 条火花记录</h3>
         <div id="historyList"></div>
     </div>
 </div>
@@ -221,7 +221,7 @@
         localStorage.setItem('notion_db_id', dbId);
 
         document.getElementById('configCard').style.display = 'none';
-        alert('Notion 配置保存成功！面板已收起。');
+        alert('配置保存成功');
     }
 
     // 🎤 语音功能
@@ -290,7 +290,7 @@
         const refinePrompt = document.getElementById('refinePrompt').value.trim();
         
         document.getElementById('confirmCard').style.display = 'block';
-        document.getElementById('outSummary').value = '正在进行智能去噪、提取与分类... 🔮';
+        document.getElementById('outSummary').value = '正在分析总结... 🔮';
 
         let userContent = `原始输入文本：\n${rawText || "用户已上传图片/截图"}`;
         if (isRefining) userContent += `\n\n【用户提出的修改要求】：${refinePrompt}`;
@@ -360,6 +360,7 @@ async function syncToNotion() {
             "分类": { "select": { "name": category } },
             "碎片内容": { "rich_text": [{ "text": { "content": summary } }] },
             "备注": { "rich_text": [{ "text": { "content": rawText ? `原始记录：${rawText.slice(0, 200)}` : "速记" } }] }
+            "时间": { "date": { "start": new Date().toISOString() } }
         }
     };
 
@@ -385,7 +386,7 @@ async function syncToNotion() {
         console.error(err);
         alert('请求失败：' + err.message);
     } finally {
-        syncBtn.innerText = "🚀 确认无误，写入 Notion 数据库";
+        syncBtn.innerText = "🚀 确认并写入 Notion ";
         syncBtn.disabled = false;
     }
 }
