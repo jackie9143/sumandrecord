@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>⚡ JACKIE的思维火花记录 // 今天又在想什么呢?</title>
+    <!-- 引入离线文字识别库 (Tesseract.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -29,7 +30,6 @@
         }
         .container { width: 100%; max-width: 760px; flex: 1; }
         
-        /* 卡片与现代布局 */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -39,7 +39,6 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
         
-        /* 标题大字号 */
         h2 { 
             color: var(--accent-glow); 
             font-size: 22px; 
@@ -73,7 +72,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 增大表单元素与字体 */
         label { font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 6px; margin-top: 10px; }
         textarea, input, select {
             width: 100%;
@@ -89,7 +87,6 @@
         }
         textarea:focus, input:focus, select:focus { border-color: var(--accent-glow); }
 
-        /* 按钮现代化大号设计 */
         .btn-group { display: flex; gap: 12px; margin-bottom: 12px; }
         button {
             background: #238636;
@@ -115,7 +112,6 @@
         .preview-img { width: 70px; height: 70px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color); }
         .img-container { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
 
-        /* 需求 4：微调输入框与重新输出按钮同行并排 */
         .refine-box {
             background: rgba(0, 0, 0, 0.25);
             border: 1px dashed var(--border-color);
@@ -132,7 +128,6 @@
         .refine-row input { margin-bottom: 0; flex: 1; }
         .refine-row button { white-space: nowrap; padding: 12px 16px; }
 
-        /* 需求 1 & 2：折叠面板与历史记录项操作 */
         .history-header {
             display: flex;
             justify-content: space-between;
@@ -141,7 +136,7 @@
             user-select: none;
         }
         .history-header:hover h3 { color: #fff; }
-        .history-list { margin-top: 12px; display: none; } /* 默认折叠 */
+        .history-list { margin-top: 12px; display: none; }
         
         .history-item {
             background: rgba(9, 12, 16, 0.6);
@@ -160,7 +155,6 @@
         .history-actions { display: flex; gap: 6px; flex-shrink: 0; }
         .history-actions button { padding: 6px 10px; font-size: 12px; font-weight: normal; }
 
-        /* 需求 6：署名页脚 */
         footer {
             margin-top: 20px;
             padding: 16px 0;
@@ -172,19 +166,17 @@
             max-width: 760px;
         }
 
-        /* 需求 3 & 5：移动端专属适配 */
         @media (max-width: 600px) {
             body { padding: 10px; }
             .card { padding: 14px; }
             
-            /* 录音与上传图片在移动端高按钮并排 */
             .btn-group {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 10px;
             }
             .btn-group button {
-                padding: 16px 10px; /* 增加高度更易按 */
+                padding: 16px 10px;
                 font-size: 15px;
             }
             
@@ -212,11 +204,10 @@
 <div class="container">
     <h2>
         <span class="cyber-logo" onclick="toggleConfigBackdoor()" title="点击开启/隐藏密钥后门">⚡</span> 
-        JACKIE的思维火花记录 
-        <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">// 今天又在想什么呢?</span>
+        赛博速记终端 
+        <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">// Notion 自动化</span>
     </h2>
 
-    <!-- 🚪 暗门配置区域 -->
     <div class="card" id="configCard">
         <h3>🔒 配置面板</h3>
         <label>DEEPSEEK API KEY</label>
@@ -231,12 +222,10 @@
         <button onclick="saveConfig()" style="width: 100%; margin-top: 10px;">💾 保存配置并隐藏</button>
     </div>
 
-    <!-- 1. 多模态采集卡片 -->
     <div class="card">
         <h3>1. 采集内容</h3>
         <textarea id="rawText" rows="4" placeholder="在此输入文字、点击下方录音，或直接在页面 Cmd+V / Ctrl+V 粘贴截图..."></textarea>
         
-        <!-- 移动端并排大按钮 -->
         <div class="btn-group">
             <button class="secondary" id="recordBtn" onclick="toggleRecording()">🎙️ 按下录音</button>
             <button class="secondary" onclick="document.getElementById('fileInput').click()">📷 上传图片</button>
@@ -248,7 +237,6 @@
         <button class="action-btn" onclick="processWithDeepSeek()">🔮 AI 智能提炼</button>
     </div>
 
-    <!-- 2. AI 提炼与微调确认卡片 -->
     <div class="card" id="confirmCard" style="display: none;">
         <h3>2. 确认与微调</h3>
         
@@ -268,7 +256,6 @@
         <label>碎片内容（摘要）：</label>
         <textarea id="outSummary" rows="4"></textarea>
 
-        <!-- 需求 4：改要求框与按钮同行 -->
         <div class="refine-box">
             <label style="margin-top: 0; color: var(--accent-glow);">💬 修改要求</label>
             <div class="refine-row">
@@ -280,7 +267,6 @@
         <button id="syncBtn" class="action-btn" onclick="syncToNotion()" style="background: var(--accent-blue);">🚀 确认并写入 Notion</button>
     </div>
 
-    <!-- 3. 最近 10 条历史缓存（需求 1 & 2：默认折叠 + 操作按钮） -->
     <div class="card" id="historyCard" style="display: none;">
         <div class="history-header" onclick="toggleHistory()">
             <h3 style="margin-bottom: 0;">🕒 最近 10 条火花记录</h3>
@@ -290,7 +276,6 @@
     </div>
 </div>
 
-<!-- 需求 6：署名页脚 -->
 <footer>
     Designed & Developed with ⚡ by <strong>Jackie</strong>
 </footer>
@@ -299,6 +284,7 @@
     let isRecording = false;
     let recognition = null;
     let imageFiles = [];
+    let imageBase64List = [];
 
     window.addEventListener('DOMContentLoaded', () => {
         renderHistory();
@@ -333,7 +319,6 @@
         alert('配置保存成功');
     }
 
-    // 🎤 语音识别
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         recognition = new SpeechRecognition();
@@ -364,7 +349,6 @@
         }
     }
 
-    // 📷 图片粘贴与上传
     document.addEventListener('paste', (e) => {
         for (let item of e.clipboardData.items) {
             if (item.type.indexOf('image') !== -1) addImagePreview(item.getAsFile());
@@ -374,15 +358,13 @@
     function handleFileSelect(e) {
         for (let file of e.target.files) addImagePreview(file);
     }
-// 存储图片的 Base64 数组
-    let imageBase64List = [];
 
     function addImagePreview(file) {
         imageFiles.push(file);
         const reader = new FileReader();
         reader.onload = (e) => {
             const base64Data = e.target.result;
-            imageBase64List.push(base64Data); // 存放 Base64 给 AI 读取
+            imageBase64List.push(base64Data);
 
             const img = document.createElement('img');
             img.src = base64Data;
@@ -391,7 +373,9 @@
         };
         reader.readAsDataURL(file);
     }
-async function processWithDeepSeek(isRefining = false) {
+
+    // 🔮 先用离线 OCR 扫字，再交给 DeepSeek 纯文本提炼
+    async function processWithDeepSeek(isRefining = false) {
         const apiKey = localStorage.getItem('bt_api_key');
         if (!apiKey) {
             toggleConfigBackdoor();
@@ -405,17 +389,17 @@ async function processWithDeepSeek(isRefining = false) {
 
         let extractedImageText = "";
 
-        // 1. 如果有上传图片，先用前端 OCR 识别图片里的字
+        // 1. 如果有上传图片，先用前端识别文字
         if (imageBase64List.length > 0) {
             document.getElementById('outSummary').value = '正在扫描识别图片中的文字... 🔍';
             try {
                 for (let i = 0; i < imageBase64List.length; i++) {
                     const result = await Tesseract.recognize(
                         imageBase64List[i],
-                        'chi_sim+eng', // 支持中文简体与英文
+                        'chi_sim+eng',
                         { logger: m => console.log(m) }
                     );
-                    extractedImageText += `\n[图片${i+1}识别内容]:\n` + result.data.text;
+                    extractedImageText += `\n[图片${i+1}识别到的文字]:\n` + result.data.text;
                 }
             } catch (ocrErr) {
                 console.error("OCR 识别出错:", ocrErr);
@@ -424,20 +408,20 @@ async function processWithDeepSeek(isRefining = false) {
 
         document.getElementById('outSummary').value = '正在用 AI 提炼总结... 🔮';
 
-        // 2. 拼接所有文字信息（用户输入的文本 + 识别出来的图片文本）
+        // 2. 拼接所有文字
         let fullInput = "";
-        if (rawText) fullInput += `用户手写文本：\n${rawText}\n`;
+        if (rawText) fullInput += `用户输入的文本：\n${rawText}\n`;
         if (extractedImageText) fullInput += extractedImageText;
 
         if (!fullInput.trim()) {
-            document.getElementById('outTitle').value = "未检测到内容";
+            document.getElementById('outTitle').value = "未检测到文字";
             document.getElementById('outSummary').value = "请先输入文字或上传包含清晰文字的图片。";
             return;
         }
 
         if (isRefining) fullInput += `\n\n【修改要求】：${refinePrompt}`;
 
-        const systemPrompt = `你是一个高级个人信息分类与提炼秘书。请根据用户提供的文本（包括从截图提取的文字），总结出核心要点。
+        const systemPrompt = `你是一个高级个人信息分类与提炼秘书。请根据用户提供的文本（包含从截图提取的文字），总结出核心要点。
 【6种固定分类】：工作学习, 思维火花, 兴趣爱好, 工具技巧, 个人代办, 其它
 严格输出 JSON 格式：{"title": "标题", "category": "分类名称", "summary": "精炼摘要"}`;
 
@@ -449,7 +433,7 @@ async function processWithDeepSeek(isRefining = false) {
                     'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: 'deepseek-chat', // 使用官方标准纯文本模型即可，极速且便宜
+                    model: 'deepseek-chat', // 使用标准纯文本模型
                     messages: [
                         { role: 'system', content: systemPrompt },
                         { role: 'user', content: fullInput }
@@ -459,6 +443,10 @@ async function processWithDeepSeek(isRefining = false) {
             });
 
             const data = await response.json();
+            if (!data.choices || !data.choices[0]) {
+                throw new Error(data.error?.message || "API 未返回正确结果");
+            }
+
             const resContent = JSON.parse(data.choices[0].message.content);
 
             document.getElementById('outTitle').value = resContent.title || '无标题速记';
@@ -469,7 +457,6 @@ async function processWithDeepSeek(isRefining = false) {
         }
     }
 
-    // 🚀 写入 Notion
     async function syncToNotion(customData = null) {
         const secret = localStorage.getItem('notion_secret_key');
         let dbId = localStorage.getItem('notion_db_id') || '';
@@ -480,7 +467,6 @@ async function processWithDeepSeek(isRefining = false) {
             return alert('请先点大闪电 ⚡ 填入 Notion Secret 和 Database ID！');
         }
 
-        // 如果是从历史记录直接传参调用
         const title = customData ? customData.title : document.getElementById('outTitle').value.trim();
         const category = customData ? customData.category : document.getElementById('outCategory').value;
         const summary = customData ? customData.summary : document.getElementById('outSummary').value.trim();
@@ -534,7 +520,6 @@ async function processWithDeepSeek(isRefining = false) {
         }
     }
 
-    // 需求 2：折叠/展开历史记录
     function toggleHistory() {
         const list = document.getElementById('historyList');
         const icon = document.getElementById('historyFoldIcon');
@@ -555,7 +540,6 @@ async function processWithDeepSeek(isRefining = false) {
         renderHistory();
     }
 
-    // 需求 1：渲染历史记录并包含【修改】和【写入Notion】
     function renderHistory() {
         const history = JSON.parse(localStorage.getItem('feishu_history')) || [];
         const historyCard = document.getElementById('historyCard');
