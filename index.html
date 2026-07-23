@@ -373,20 +373,24 @@
     function handleFileSelect(e) {
         for (let file of e.target.files) addImagePreview(file);
     }
+// 存储图片的 Base64 数组
+    let imageBase64List = [];
 
     function addImagePreview(file) {
         imageFiles.push(file);
         const reader = new FileReader();
         reader.onload = (e) => {
+            const base64Data = e.target.result;
+            imageBase64List.push(base64Data); // 存放 Base64 给 AI 读取
+
             const img = document.createElement('img');
-            img.src = e.target.result;
+            img.src = base64Data;
             img.className = 'preview-img';
             document.getElementById('imgPreviewArea').appendChild(img);
         };
         reader.readAsDataURL(file);
     }
 
-    // 🔮 DeepSeek 智能分析
     async function processWithDeepSeek(isRefining = false) {
         const apiKey = localStorage.getItem('bt_api_key');
         if (!apiKey) {
@@ -398,12 +402,26 @@
         const refinePrompt = document.getElementById('refinePrompt').value.trim();
         
         document.getElementById('confirmCard').style.display = 'block';
-        document.getElementById('outSummary').value = '正在分析总结... 🔮';
+        document.getElementById('outSummary').value = '正在分析总结（含图片识别）... 🔮';
 
-        let userContent = `原始输入文本：\n${rawText || "用户已上传图片/截图"}`;
-        if (isRefining) userContent += `\n\n【用户提出的修改要求】：${refinePrompt}`;
+        // 1. 构建多模态 content 数组
+        let userContentList = [];
 
-        const systemPrompt = `你是一个高级个人信息分类与提炼秘书。
+        // 添加文本内容
+        let textPrompt = rawText ? `输入文本：\n${rawText}` : "请识别并总结上传图片中的内容。";
+        if (isRefining) textPrompt += `\n\n【修改要求】：${refinePrompt}`;
+        
+        userContentList.push({ type: "text", text: textPrompt });
+
+        // 添加所有上传的图片
+        imageBase64List.forEach(base64 => {
+            userContentList.push({
+                type: "image_url",
+                image_url: { url: base64 }
+            });
+        });
+
+        const systemPrompt = `你是一个高级个人信息分类与提炼秘书。如果包含图片，请先OCR识别图片中的文字并理解其含义，请根据核心文本语义进行提炼，并排除时间戳、闲聊等与主要内容无关的信息。
 【6种固定分类】：工作学习, 思维火花, 兴趣爱好, 工具技巧, 个人代办, 其它
 严格输出 JSON 格式：{"title": "标题", "category": "分类名称", "summary": "精炼摘要"}`;
 
@@ -415,10 +433,10 @@
                     'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: 'deepseek-v4-flash',
+                    model: 'deepseek-v4-flash', // 注意：请确保你调用的模型版本支持视觉/多模态（Vision）
                     messages: [
                         { role: 'system', content: systemPrompt },
-                        { role: 'user', content: userContent }
+                        { role: 'user', content: userContentList } // 👈 传入包含文本和图片的数组！
                     ],
                     response_format: { type: "json_object" }
                 })
