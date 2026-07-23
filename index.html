@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>⚡ JACKIE的思维火花记录 // 今天又在想什么呢?</title>
@@ -390,8 +391,7 @@
         };
         reader.readAsDataURL(file);
     }
-
-    async function processWithDeepSeek(isRefining = false) {
+async function processWithDeepSeek(isRefining = false) {
         const apiKey = localStorage.getItem('bt_api_key');
         if (!apiKey) {
             toggleConfigBackdoor();
@@ -402,26 +402,42 @@
         const refinePrompt = document.getElementById('refinePrompt').value.trim();
         
         document.getElementById('confirmCard').style.display = 'block';
-        document.getElementById('outSummary').value = '正在分析总结（含图片识别）... 🔮';
 
-        // 1. 构建多模态 content 数组
-        let userContentList = [];
+        let extractedImageText = "";
 
-        // 添加文本内容
-        let textPrompt = rawText ? `输入文本：\n${rawText}` : "请识别并总结上传图片中的内容。";
-        if (isRefining) textPrompt += `\n\n【修改要求】：${refinePrompt}`;
-        
-        userContentList.push({ type: "text", text: textPrompt });
+        // 1. 如果有上传图片，先用前端 OCR 识别图片里的字
+        if (imageBase64List.length > 0) {
+            document.getElementById('outSummary').value = '正在扫描识别图片中的文字... 🔍';
+            try {
+                for (let i = 0; i < imageBase64List.length; i++) {
+                    const result = await Tesseract.recognize(
+                        imageBase64List[i],
+                        'chi_sim+eng', // 支持中文简体与英文
+                        { logger: m => console.log(m) }
+                    );
+                    extractedImageText += `\n[图片${i+1}识别内容]:\n` + result.data.text;
+                }
+            } catch (ocrErr) {
+                console.error("OCR 识别出错:", ocrErr);
+            }
+        }
 
-        // 添加所有上传的图片
-        imageBase64List.forEach(base64 => {
-            userContentList.push({
-                type: "image_url",
-                image_url: { url: base64 }
-            });
-        });
+        document.getElementById('outSummary').value = '正在用 AI 提炼总结... 🔮';
 
-        const systemPrompt = `你是一个高级个人信息分类与提炼秘书。如果包含图片，请先OCR识别图片中的文字并理解其含义，请根据核心文本语义进行提炼，并排除时间戳、闲聊等与主要内容无关的信息。
+        // 2. 拼接所有文字信息（用户输入的文本 + 识别出来的图片文本）
+        let fullInput = "";
+        if (rawText) fullInput += `用户手写文本：\n${rawText}\n`;
+        if (extractedImageText) fullInput += extractedImageText;
+
+        if (!fullInput.trim()) {
+            document.getElementById('outTitle').value = "未检测到内容";
+            document.getElementById('outSummary').value = "请先输入文字或上传包含清晰文字的图片。";
+            return;
+        }
+
+        if (isRefining) fullInput += `\n\n【修改要求】：${refinePrompt}`;
+
+        const systemPrompt = `你是一个高级个人信息分类与提炼秘书。请根据用户提供的文本（包括从截图提取的文字），总结出核心要点。
 【6种固定分类】：工作学习, 思维火花, 兴趣爱好, 工具技巧, 个人代办, 其它
 严格输出 JSON 格式：{"title": "标题", "category": "分类名称", "summary": "精炼摘要"}`;
 
@@ -433,10 +449,10 @@
                     'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: 'deepseek-v4-flash', // 注意：请确保你调用的模型版本支持视觉/多模态（Vision）
+                    model: 'deepseek-chat', // 使用官方标准纯文本模型即可，极速且便宜
                     messages: [
                         { role: 'system', content: systemPrompt },
-                        { role: 'user', content: userContentList } // 👈 传入包含文本和图片的数组！
+                        { role: 'user', content: fullInput }
                     ],
                     response_format: { type: "json_object" }
                 })
